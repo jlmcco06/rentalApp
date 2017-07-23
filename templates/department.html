@@ -1,0 +1,10 @@
+{% include "header.html" %}
+{% block content %}
+</br>
+	<h1>{{ department.name }}</h1>
+
+	{% for item in inventory %}
+	<a href="{{ url_for('piecePage', piece_id=item.id)}}">{{item.name}}</a></br></br>
+	{% endfor %}
+</body>
+{% endblock %}

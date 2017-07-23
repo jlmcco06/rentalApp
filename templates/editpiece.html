@@ -1,0 +1,38 @@
+{% include "header.html" %}
+
+{% block content %}
+ {% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class=flashes>
+      {{ messages[-1] }}
+    </ul>
+  {% endif %}
+{% endwith %}
+{% endblock%}
+
+<h1>Alright, let's change some stuff about your {{piece.name}}!</h1>
+<h2>What would you like to change?</h2>
+
+<form action="{{ url_for('editPiece', piece_id=piece.id)}}" method='POST' enctype='multipart/form-data'>
+What would you like the display name to be for the piece?</br>
+<input type='text' name='piece_name' value='{{piece.name}}'></br>
+How many of this item will you be offering for rental?</br>
+<input type='text' name='quantity' value='{{piece.quantity}}'></br>
+Give us a brief description:</br>
+<textarea col='300' rows='5' name='description'>{{piece.description}}</textarea>
+</br> Your piece is currently listed in the {{piece.department}} department. If you would like to clease choose one below:</br>
+<input type='radio' name='department' value='Art'>Art</br>
+<input type='radio' name='department' value='Lighting'>Lighting</br>
+<input type='radio' name='department' value='Props'>Prop</br>
+<input type='radio' name='department' value='Seating'>Seating</br>
+<input type='radio' name='department' value='Storage'>Storage</br>
+<input type='radio' name='department' value='Tables'>Table</br>
+<input type='radio' name='department' value='Textiles'>Textile</br>
+Change the photo associated with this piece:</br>
+<input name='image' type='file'></br> 
+<input type='submit' value='Update'>
+</form>
+</br>
+<a href="{{ url_for('deletePiece', piece_id=piece.id)}}">Click here if you would like to remove this piece from your shop</a>
+</body>
+{% include 'footer.html' %}

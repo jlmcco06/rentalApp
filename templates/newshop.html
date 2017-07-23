@@ -1,0 +1,16 @@
+{% include "header.html" %}
+<h1>So you'd like to create a new shop.</h1>
+<h2>Tell us about it!</h2>
+
+<form action="{{ url_for('newShop')}}" method="POST">
+What would you like to call your shop?</br>
+<input type='text' name='shop_name'></br>
+Give us a brief description of your shop:</br>
+<textarea col='300' rows='5' name='description'></textarea></br>
+What email would be best for contact?</br>
+<input type='text' name='email'></br>
+<input type='submit' name='Open this shop!'>
+</form>
+
+</body>
+{% include 'footer.html' %}

@@ -1,0 +1,10 @@
+{% include "header.html" %}
+{% block content %}
+	<h1>Pieces</h1>
+	{% for piece in pieces %}
+	<a href="{{ url_for('piecePage', piece_id=piece.id)}}"><h3>{{piece.name}}</h3></a>
+	{% endfor %}
+{% endblock %}
+</body>
+
+{% include 'footer.html' %}

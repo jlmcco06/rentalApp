@@ -1,0 +1,27 @@
+{% include "header.html" %}
+
+{% block content %}
+ {% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class=flashes>
+      {{ messages[-1] }}
+    </ul>
+  {% endif %}
+{% endwith %}
+{% endblock%}
+
+<h1>So, you'd like to change {{shop.name}}.</h1>
+<h2>What would you like to change?</h2>
+<form action="{{ url_for('editShop', shop_id=shop.id)}}" method="POST">
+What would you like to call your shop?</br>
+<input type='text' name='shop_name' value='{{shop.name}}'></br>
+Give us a brief description of your shop:</br>
+<textarea col='300' rows='5' name='description' value='{{shop.description}}'>{{shop.description}}</textarea></br>
+What email would be best for contact?</br>
+<input type='text' name='email' value='{{shop.email}}'></br>
+<input type='submit' name='Open this shop!'>
+</form>
+
+<a href="{{ url_for('deleteShop', shop_id=shop.id)}}"><h2>If you you like to close {{shop.name}}, click here</h1></a>
+</body>
+{% include 'footer.html' %}

@@ -1,0 +1,11 @@
+{% include 'header.html' %}
+
+<h2> Are you sure you want to close {{shop.name}}?</h2>
+</br>
+<form action="{{ url_for('deleteShop', shop_id=shop.id)}}" method='POST'>
+<input type='submit' value='Close shop'>
+</form>
+</br>
+<a href="{{ url_for('shopPage', shop_id=shop.id)}}"><h3>No! I would like to go back to the shop page and keep {{shop.name}} open</h3></a>
+</body>
+</html>

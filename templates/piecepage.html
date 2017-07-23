@@ -1,0 +1,25 @@
+{% include "header.html" %}
+{% block content %}
+
+<h3>This piece belongs to your shop!</h3>
+<div class="links">
+	<a href="{{ url_for('editPiece', piece_id=piece.id)}}">If you would like to edit or delete the profile for this piece, click here!</a>
+</div>	
+<container class='piece_info'>
+	<div class='details'>
+		<h1>{{piece.name}}</h1>
+		<p>{{piece.description}}</p>
+		<p>Quantity: {{piece.quantity}}</p>
+		<p>Department: {{piece.department}}</p>
+	</div>
+
+	<div class="piece_image">
+		<img src="{{ url_for('static', filename=piece.image)}}">
+	</div>
+</container>
+</br>
+</br>
+<a href="{{ url_for('shopPage', shop_id=shop.id)}}">click here to see more from your shop</a>	
+{% endblock %}
+</body>
+{% include 'footer.html' %}

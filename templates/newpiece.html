@@ -1,0 +1,26 @@
+{% include "header.html" %}
+<h1>Great, you'd like to add a new piece to {{shop.name}}!</h1>
+<h2>We'll just need a little bit of information about it:</h2>
+
+<form action="{{ url_for('newPiece', shop_id=shop.id)}}" method='POST' enctype='multipart/form-data'>
+What would you like the display name to be for the piece?</br>
+<input type='text' name='piece_name'></br>
+How many of this item will you be offering for rental?</br>
+<input type='text' name='quantity' ></br>
+Give us a brief description:</br>
+<textarea col='300' rows='5' name='description'></textarea></br>
+To which department(s) does this piece belong? (PLEASE NOTE: If you do not choose a department here, your item will not be viable to shoppers Browsing by department)</br>
+<input type='radio' name='department' value='Art'>Art</br>
+<input type='radio' name='department' value='Lighting'>Lighting</br>
+<input type='radio' name='department' value='Props'>Prop</br>
+<input type='radio' name='department' value='Seating'>Seating</br>
+<input type='radio' name='department' value='Storage'>Storage</br>
+<input type='radio' name='department' value='Tables'>Table</br>
+<input type='radio' name='department' value='Textiles'>Textile</br>
+People like to see what they'll be renting. Add an image here!</br>
+<input name='image' type='file'></br> 
+<input type='submit' value='Add this piece!'>
+</form>
+
+</body>
+{% include 'footer.html' %}

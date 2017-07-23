@@ -1,0 +1,11 @@
+{% include "header.html" %}
+
+<section class='browse'>
+	<div class='options'>
+		<a href="{{ url_for('showDepartments')}}"><h1>Browse Departments</h1></a>
+		<a href="{{ url_for('showShops')}}"><h1>Browse Shops</h1></a>
+		<a href="{{ url_for('showPieces')}}"><h1>Browse Pieces</h1></a>
+	</div>
+</section>
+</body>
+{% include 'footer.html' %}

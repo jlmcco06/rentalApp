@@ -1,0 +1,21 @@
+{% include "header.html" %}
+{% block content %}
+ {% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class=flashes>
+      {{ messages[-1] }}
+    </ul>
+  {% endif %}
+{% endwith %}
+	<h1>Shops</h1>
+	{% for shop in shops %}
+	<a href="{{ url_for('shopPage', shop_id=shop.id)}}"><h3>{{shop.name}}</h3></a>
+	{% endfor %}
+{% endblock %}
+
+Would you like to add a new shop?
+
+<a href="{{ url_for('newShop')}}">Add it here!</a>
+</body>
+
+{% include 'footer.html' %}

@@ -1,0 +1,20 @@
+{% include "header.html" %}
+{% block content %}
+<div class='piece_info'>
+	<div class='details'>
+		<h1>{{piece.name}}</h1>
+		<p>{{piece.description}}</p>
+		<p>Quantity: {{piece.quantity}}</p>
+		<p>Department: {{piece.department}}</p>
+	</div>
+
+	<div class="piece_image">
+		<img src="{{ url_for('static', filename=piece.image)}}">
+	</div>
+</div>
+</br>
+</br>
+<a href="{{ url_for('shopPage', shop_id=shop.id)}}">click here to see more from {{shop.name}}</p>
+{% endblock %}
+</body>
+{% include 'footer.html' %}

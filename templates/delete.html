@@ -1,0 +1,9 @@
+{% include 'header.html' %}
+
+<h2> Are you sure you want to close {{shop.name}}?</h2>
+</br>
+<a href="{{ url_for('deleteShop', shop_id=shop.id)}}"><h3>Yes, please remove {{shop.name}} from BetsuRental</h3></a>
+</br>
+<a href="{{ url_for('shopPage', shop_id=shop.id)}}"><h3>No! I would like to go back to the shoppage and keep {{shop.name}} open</h3></a>
+</body>
+</html>

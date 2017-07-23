@@ -1,0 +1,23 @@
+{% include "header.html" %}
+{% block content %}
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class=flashes>
+      {{ messages[-1] }}
+    </ul>
+  {% endif %}
+{% endwith %}
+<h1>{{shop.name}} belongs to you!</h1>
+<p>Your description: {{shop.description}}</p>
+<p>Your email: {{shop.email}}</p>
+<p>See something you'd like to change about your shop? <a href="{{ url_for('editShop', shop_id=shop.id)}}"> Edit or delete your shop here</a>.</p>
+</br>
+<h2>Here's what {{shop.name}} has to offer:</h2>
+{% for item in inventory: %}
+</br><a href="{{ url_for('piecePage', piece_id=item.id)}}">{{item.name}}</a></br></br>
+{% endfor %}
+<h2>Have more stuff you'd like to rent?</h2>
+<a href="{{ url_for('newPiece', shop_id=shop.id)}}"><h3>Add a piece to your shop!</h3></a>
+{% endblock %}
+</body>
+{% include 'footer.html' %}

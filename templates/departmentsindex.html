@@ -1,0 +1,15 @@
+{% include "header.html" %}
+
+	<h1>Browse Departments</h1>
+	{% block content %}
+		{% for department in departments %}
+			<a href='{{ url_for('showDept', dept_name=department.name)}}'><h2>{{department.name}}</h2></a>
+		{% endfor %}
+	{% endblock %}
+</br>
+	<a href='{{ url_for('showShops')}}'><h3>Do you have a favorite shop? Browse by shop here!</h3>
+</br>
+</br>
+<footer></footer>
+</body>
+{% include 'footer.html' %}
