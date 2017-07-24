@@ -19,7 +19,7 @@ CLIENT_ID = json.loads(
 	open('client_secret.json', 'r').read())['web']['client_id']
 
 #Allowed file extensions for image uploads
-ALLOWED_EXTENTIONS = set(['png', 'jpg', 'jpeg', 'gif'])
+ALLOWED_EXTENTIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 app = Flask(__name__)
 
@@ -27,6 +27,7 @@ app = Flask(__name__)
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_FOLDER = os.path.join(APP_ROOT, 'static/uploads')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024
 
 engine = create_engine('sqlite:///shoppieces.db')
 Base.metadata.bind = engine
@@ -50,10 +51,9 @@ def showDept(dept_name):
 	inventory = session.query(Piece).filter_by(department=dept_name).all()
 	return render_template('department.html', department=department, inventory=inventory)
 
-@app.route('/department/json/<string:dept_name>')
-def showDeptJSON(dept_name):
-	department = session.query(Department).filter_by(name=dept_name).one()
-	inventory = session.query(Piece).filter_by(department=dept_name).all()
+@app.route('/department/json')
+def showDeptJSON():
+	inventory = session.query(Piece).order_by(Piece.department).all()
 	return jsonify(deptInventory= [item.serialize for item in inventory])
 
 @app.route('/shops')
@@ -85,7 +85,7 @@ def shopPage(shop_id):
 		return render_template('public_shoppage.html', shop=shop, inventory=inventory)
 	return render_template('shoppage.html', shop=shop, inventory=inventory)
 
-@app.route('/shops/json/<int:shop_id>')
+@app.route('/shops/<int:shop_id>/json')
 def shopPageJSON(shop_id):
 	shop = session.query(ShopOwner).filter_by(id=shop_id).one()
 	return jsonify(shopInfo=shop.serialize)
@@ -100,7 +100,7 @@ def piecePage(piece_id):
 		return render_template('public_piecepage.html', shop=shop, piece=piece)
 	return render_template('piecepage.html', shop=shop, piece=piece)
 
-@app.route('/pieces/json/<int:piece_id>')
+@app.route('/pieces/<int:piece_id>/json')
 def piecePageJSON(piece_id):
 	piece = session.query(Piece).filter_by(id=piece_id).one()
 	return jsonify(pieceInfo = piece.serialize)
@@ -119,7 +119,8 @@ def newShop():
 	if request.method == 'POST':
 		#create new shop object with form informaion
 		shop = ShopOwner(name=request.form['shop_name'],
-		 	description=request.form['description'], username=login_session['username'], email=request.form['email'])
+		 	description=request.form['description'], username=login_session['username'],
+		 	email=request.form['email'])
 		session.add(shop)
 		session.commit()
 		flash('%s has been created!'%request.form['shop_name'])
@@ -131,6 +132,9 @@ def newShop():
 def editShop(shop_id):
 	shop = session.query(ShopOwner).filter_by(id=shop_id).one()
 	#Re-route to login page if user not sign-in as shop owner.
+	if 'username' not in login_session:
+		flash("You must login as this shop's owner in order to edit profile information.")
+		return redirect(url_for('showLogin'))
 	if login_session['username'] != shop.username:
 		flash("You must login as this shop's owner in order to edit profile information.")
 		return redirect(url_for('showLogin'))
@@ -155,6 +159,9 @@ def editPiece(piece_id):
 	shop_id = piece.shop_id
 	shop = session.query(ShopOwner).filter_by(id=shop_id).one()
 	#Re-route to login page if user not signed-in as shop owner
+	if 'username' not in login_session:
+		flash("You must login as this shop's owner in order to edit profile information.")
+		return redirect(url_for('showLogin'))
 	if login_session['username'] != shop.username:
 		flash("You must login as this shop's owner in order to edit profile information.")
 		return redirect(url_for('showLogin'))
@@ -169,7 +176,8 @@ def editPiece(piece_id):
 	image = request.files['image']
 	if image.filename == '':
 		piece.image = 'noimage.jpg'
-	#if image is present and an allowed file type, add it to the uploads folder and updated database with path
+	#if image is present and an allowed file type, add it to the uploads folder and 
+	# updated database with path
 	if image and allowed(image.filename):
 		piece.image = 'uploads/' + image.filename
 		image.save(os.path.join(UPLOAD_FOLDER, image.filename))
@@ -189,11 +197,15 @@ def newAccount():
 def newPiece(shop_id):
 	shop = session.query(ShopOwner).filter_by(id=shop_id).one()
 	if 'username' not in login_session:
+		flash("You must login as this shop's owner in order to add a piece.")
+		return redirect(url_for('showLogin'))
+	if login_session['username'] != shop.username:
 		flash('You must be logged-in as the shopowner to add a piece.')
 		return redirect(url_for('showLogin'))
 	if request.method == 'POST':
 		item = Piece(name=request.form['piece_name'], quantity=request.form['quantity'],
-			description=request.form['description'], department=request.form['department'], shop_id=shop.id)
+			description=request.form['description'], department=request.form['department'],
+			shop_id=shop.id)
 		session.add(item)
 		session.commit()
 		# Add image to uploads folder and file path to database 
@@ -212,6 +224,9 @@ def newPiece(shop_id):
 @app.route('/deleteshop/<int:shop_id>', methods=['GET', 'POST'])
 def deleteShop(shop_id):
 	shop = session.query(ShopOwner).filter_by(id=shop_id).one()
+	if 'username' not in login_session:
+		flash("You must login as this shop's owner in order to edit profile information.")
+		return redirect(url_for('showLogin'))
 	if login_session['username'] != shop.username:
 		flash("You must login as this shop's owner in order to edit profile information.")
 		return redirect(url_for('showLogin'))
@@ -228,6 +243,9 @@ def deletePiece(piece_id):
 	piece = session.query(Piece).filter_by(id=piece_id).one()
 	shop_id = piece.shop_id
 	shop = session.query(ShopOwner).filter_by(id=shop_id).one()
+	if 'username' not in login_session:
+		flash("You must login as this shop's owner in order to edit profile information.")
+		return redirect(url_for('showLogin'))
 	if login_session['username'] != shop.username:
 		flash("You must login as this shop's owner in order to edit profile information.")
 		return redirect(url_for('showLogin'))
@@ -256,7 +274,8 @@ def fbconnect():
 	#Send credentials to facebook to retrieve access token
 	app_id = json.loads(open('fb_client_secrets.json', 'r').read())['web']['app_id']
 	app_secret = json.loads(open('fb_client_secrets.json', 'r').read())['web']['app_secret']
-	url = 'https://graph.facebook.com/v2.8/oauth/access_token?grant_type=fb_exchange_token&client_id=%s&client_secret=%s&fb_exchange_token=%s'% (app_id, app_secret, auth)
+	url = 'https://graph.facebook.com/v2.8/oauth/access_token?grant_type=fb_exchange_token&\
+	client_id=%s&client_secret=%s&fb_exchange_token=%s'% (app_id, app_secret, auth)
 	h = httplib2.Http()
 	token = h.request(url, 'GET')[1]
 	token = json.loads(token)
@@ -275,7 +294,8 @@ def fbconnect():
 	login_session['access_token'] = token
 
 	#Get picture
-	url = 'https://graph.facebook.com/v2.8/me/picture?access_token=%s&redirect=0&height=200&width=200' % token
+	url = 'https://graph.facebook.com/v2.8/me/picture?access_token=%s&redirect=0&height=200&\
+	width=200' % token
 	h = httplib2.Http()
 	result = h.request(url, 'GET')[1]
 	data = json.loads(result)
@@ -288,7 +308,8 @@ def fbconnect():
 	output += '!</h1>'
 	output += '<img src="'
 	output += login_session['picture']
-	output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
+	output += ' " style = "width: 300px; height: 300px;border-radius: 150px;\
+	-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
 	flash("you are now logged in as %s" % login_session['username'])
 	print "done!"
 	return output
@@ -352,7 +373,8 @@ def gconnect():
 	output += '!</h1>'
 	output += '<img src="'
 	output += login_session['picture']
-	output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
+	output += ' " style = "width: 300px; height: 300px;border-radius: 150px;\
+	-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
 	flash("you are now logged in as %s" % login_session['username'])
 	print "done!"
 	return output
